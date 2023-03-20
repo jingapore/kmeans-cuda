@@ -1,0 +1,43 @@
+#
+# Specification for sequential implementation of kmeans
+#
+[Sequential]
+How_To_Compile: nvcc ./src/*.cpp ./src/*.cu -O2 -arch=sm_60 -I./src/ -o bin/kmeans
+Executable: bin/kmeans
+Extra_Args: --use_cpu
+
+#
+# Specification for GPU implementation of kmeans
+# using Thrust
+#
+[Thrust]
+How_To_Compile: nvcc ./src/*.cpp ./src/*.cu -O2 -arch=sm_60 -I./src/ -o bin/kmeans
+Executable: bin/kmeans
+Extra_Args: --use_thrust
+
+#
+# Specification for GPU implementation of kmeans
+# using CUDA
+#
+[CUDA basic]
+How_To_Compile: nvcc ./src/*.cpp ./src/*.cu -O2 -arch=sm_60 -I./src/ -o bin/kmeans
+Executable: bin/kmeans
+Extra_Args:
+
+#
+# Specification for GPU implementation of kmeans
+# using Shared Memory
+#
+[CUDA shared]
+How_To_Compile: nvcc ./src/*.cpp ./src/*.cu -O2 -arch=sm_60 -I./src/ -o bin/kmeans
+Executable: bin/kmeans
+Extra_Args: --use_shared_mem
+
+#
+# Specification for GPU implementation of kmeans
+# Alternatives
+#
+[Alternatives]
+How_To_Compile: nvcc ./src/*.cpp ./src/*.cu -O2 -arch=sm_60 -I./src/ -o bin/kmeans
+Executable: bin/kmeans
+Extra_Args: --use_alternate
