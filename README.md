@@ -6,12 +6,23 @@ We examine the theoretical and empirical boost in speed, when we move from seque
 ## 2.1 Environment
 ## 2.2 Approach
 
+<p align="center"><b>fig 1: shared memory for computing closest centroid</b></p>
+<p align="center">
+    <img width="66%" src="img/fig_1.png">
+</p>
+
 # 3. Speedup: Expectation vs Reality
 ## 3.1 Theoretical Estimate
 ## 3.2 Empirical Results
 
-<p align="center" width="100%">
-    <img width="66%" src="img/fig_2a.png">
+<p align="center"><b>fig 2: timing of seq vs parallel implementation</b></p>
+<p align="center">
+    <img width="66%" src="img/fig_2.png">
+</p>
+
+<p align="center"><b>fig 3: iterations to convergence at threshold of 10^-6</b></p>
+<p align="center">
+    <img width="66%" src="img/fig_3.png">
 </p>
 
 ## 3.3 Analysis: Why Reality was Different from Expectation
