@@ -11,7 +11,7 @@ We examine the theoretical and empirical boost in speed, when we move from seque
 ## 3.2 Empirical Results
 
 <p align="center" width="100%">
-    <img width="33%" src="img/fig_2a.png">
+    <img width="66%" src="img/fig_2a.png">
 </p>
 
 ## 3.3 Analysis: Why Reality was Different from Expectation
