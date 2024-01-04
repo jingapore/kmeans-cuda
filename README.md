@@ -59,10 +59,14 @@ The gains from parallelism look very promising, since a large portion of the alg
 
 ## 3.2 Empirical Results
 
+With a convergence threshold of 10-6, we see a speed up of at most 10.44x (Sequential v.s. CUDA Basic where n_points=65536). This is short of our theoretical expectation.
+
 <p align="center"><b>fig 2: timing of seq vs parallel implementation</b></p>
 <p align="center">
     <img width="66%" src="img/fig_2.png">
 </p>
+
+For completeness, the number of iterations-to-convergence is as follows.
 
 <p align="center"><b>fig 3: iterations to convergence at threshold of 10^-6</b></p>
 <p align="center">
@@ -70,5 +74,22 @@ The gains from parallelism look very promising, since a large portion of the alg
 </p>
 
 ## 3.3 Analysis: Why Reality was Different from Expectation
+### 3.3.1 Data transfer from host to GPU and <u>within</u> GPU
+The first angle that we will explore is data transfer. The broad hypothesis is that the transfer of data from host to GPU has created significant overheads, and this decreases **p** in Amdahl's law, the proportion of the overall runtime that can be parallelised.
+
+However, when comparing CUDA Basic’s end-to-end runtime with the total data transfer “costs”, they do not make up a large proportion. So we discount this hypothesis.
+
+| Dataset       | CUDA Basic end-to-end time (ms) | CUDA Basic cumulative data transfer time (ms) | Proportion of end-to-end time spent on data transfer |
+|---------------|---------------------------------|-----------------------------------------------|------------------------------------------------------|
+| n2048-d16-c16 | 6.874                           | 0.346                                         | 5.03%                                                |
+| n16384-d24-c16| 19.487                          | 0.769                                         | 3.95%                                                |
+| n65536-d32-c16| 336.21                          | 2.045                                         | 0.61%                                                |
+
+Also still on the topic of data transfer, we would like to make a brief comment concerning data transfer <u>within</u> the GPU. This relates to our secondary observation, that CUDA SharedMem showed <u>no</u> appreciable speed up over CUDA Basic.
+
+As in <u>Fig 1</u>, the speed up comes from reading from shared memory (step 2 in red), whereas the cost is reading and writing centroids data from general memory to shared memory (step 1 in blue and step 3 in orange). For the test parameters given to K-means, the pros-and-cons cancel each other out. However, if the dimensionality of the centroids increases and/or the number of centroids grows, CUDA SharedMem may outperform CUDA Basic since the one-off cost of transferring data to shared memory per iteration will be offset by the latency shaved off from the read-writes concerning centroid data.
+
+### 3.3.2 Synchronisation Costs
+
 
 # 4. Parting Remarks
