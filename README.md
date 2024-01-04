@@ -37,6 +37,26 @@ We do not perform the optimisation in Fig 1 for Stage 2, since each thread (wher
 
 # 3. Speedup: Expectation vs Reality
 ## 3.1 Theoretical Estimate
+The following table does a rough accounting of time required for sequential K-means.
+
+| S/N | Step                                                      | Stage                                      | Estimated Time Required                                  |
+|-----|-----------------------------------------------------------|--------------------------------------------|----------------------------------------------------------|
+| 1   | Calculate L2 distance                                     | 1, i.e. compute closest centroid for each point | n_points * (n_cluster * n_dims + n_clusters), from calculating distance to all clusters and then getting minimum distance. |
+| 2   | Find minimum centroid                                     | 1, i.e. compute closest centroid for each point | n_points * n_clusters                                    |
+| 3   | Accumulate point coordinates in preparation for centroid update | 1, i.e. compute closest centroid for each point | n_points * n_clusters * n_dims                           |
+| 4   | Update centroid by averaging accumulated point coordinates | 2, i.e. update centroid                      | n_clusters * n_dims                                      |
+
+We use Amdahl’s Law to estimate the speed up, taking into account that our parallel approach spawns  **n_points** number of threads in Stage 1 and **n_clusters** * **n_dims number** of threads in Stage 2. The remaining work that is done sequentially is whatever is not struck out in following table.
+
+| S/N | Step                                                      | Stage                                      | Estimated Time Required                                  |
+|-----|-----------------------------------------------------------|--------------------------------------------|----------------------------------------------------------|
+| 1   | Calculate L2 distance                                     | 1, i.e. compute closest centroid for each point | ~~n_points *~~ (n_cluster * n_dims + n_clusters), from calculating distance to all clusters and then getting minimum distance. |
+| 2   | Find minimum centroid                                     | 1, i.e. compute closest centroid for each point | ~~n_points *~~ n_clusters                                    |
+| 3   | Accumulate point coordinates in preparation for centroid update | 1, i.e. compute closest centroid for each point | ~~n_points~~ * n_clusters * n_dims                           |
+| 4   | Update centroid by averaging accumulated point coordinates | 2, i.e. update centroid                      | ~~n_clusters * n_dims~~                                      |
+
+The gains from parallelism look very promising, since a large portion of the algorithm’s runtime is dominated by n_points and this can be parallelised. A back-of-envelope calculation estimates that speed-up should be >**1000x**.
+
 ## 3.2 Empirical Results
 
 <p align="center"><b>fig 2: timing of seq vs parallel implementation</b></p>
