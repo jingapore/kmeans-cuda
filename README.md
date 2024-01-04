@@ -90,6 +90,14 @@ Also still on the topic of data transfer, we would like to make a brief comment 
 As in <u>Fig 1</u>, the speed up comes from reading from shared memory (step 2 in red), whereas the cost is reading and writing centroids data from general memory to shared memory (step 1 in blue and step 3 in orange). For the test parameters given to K-means, the pros-and-cons cancel each other out. However, if the dimensionality of the centroids increases and/or the number of centroids grows, CUDA SharedMem may outperform CUDA Basic since the one-off cost of transferring data to shared memory per iteration will be offset by the latency shaved off from the read-writes concerning centroid data.
 
 ### 3.3.2 Synchronisation Costs
+Synchronisation, not data transfer, could be a key reason why our CUDA implementation achieves only 10x speed up, not 10,000x. The table in Section 3.1 does not include synchronisation as a step. But assuming that it takes up just 5% of overall runtime, then according to Amdahl’s Law, the maximum speed up is at most **20x**, which is closer to what we have witnessed.
 
+Synchronisation could also be a key reason why CUDA SharedMem does not reap the gains from faster memory access. This is in addition to data transfer reasons cited above. Within CUDA SharedMem, threads on the same grid share the same memory, and they need to be synchronised at a barrier before moving between each step.
 
 # 4. Parting Remarks
+
+There is room to optimise our CUDA implementation of K-means.
+
+There are more sophisticated techniques that we can explore. For example, Bryan Catanzaro from NVDIA notes that calculating L2 distance is an `(x-y)^2` operation involving `x^2`, `xy`, and `y^2`, where `x` represents a point and `y` represents a centroid. He then explains that there are two ways to optimise this. First, `x^2` can be precomputed. Second, `xy` is an operation that can be optimised using GEMM (or General Matrix Multiplications) algorithms.
+
+In summary, we have coded out a faster implementation of K-means by parallelising it using CUDA. However, there are more gains that can be made.
